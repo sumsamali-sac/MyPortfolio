@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: SelfHostedPool
+
+steps:
+  - script: |
+      echo "Validating HTML files"
+      for file in $(find . -name "*.html"); do
+        echo "Validating $file"
+        tidy -q -e "$file"
+      done
+    displayName: 'Validate HTML files'
+
+  - script: |
+      echo "Validating CSS files"
+      for file in $(find . -name "*.css"); do
+        echo "Validating $file"
+        csslint "$file"
+      done
+    displayName: 'Validate CSS files'
+
+  - script: |
+      echo "Validating JavaScript files"
+      for file in $(find . -name "*.js"); do
+        echo "Validating $file"
+        jshint "$file"
+      done
+    displayName: 'Validate JavaScript files'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'path/to/your/site'
+      ArtifactName: 'site'
+      publishLocation: 'Container'
+    displayName: 'Publish build artifacts'
